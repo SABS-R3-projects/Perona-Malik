@@ -2,6 +2,7 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+from skimage.metrics import structural_similarity as ssim
 
 k = 0.01
 
@@ -39,11 +40,11 @@ def spread_once(xs, g = func, dt=0.02):
 if __name__ == '__main__':
 
     # Store Image as a numpy array:
-    im = cv2.imread("Smile.png")
+    im = cv2.imread("Apple.jpg")
     xs = im.copy()
 
     # Add noise to the image:
-    noise = np.random.randint(-10, 10, xs.shape)
+    noise = np.random.randint(-50, 50, xs.shape)
     xs = xs + noise
 
     plt.imshow(xs)
@@ -51,17 +52,20 @@ if __name__ == '__main__':
 
     fig = plt.figure()
     #ims = []
-    errs = []
-    #ims.append([plt.imshow(xs, animated=True)])
-    errs.append(np.mean((im-xs)**2))
+    err = ssim(im, xs, data_range=xs.max() - xs.min(), multichannel = True)
+    errs = [err]
 
-    for i in range(100):
+    for i in range(80):
         xs[:, :, 0] = spread_once(xs[:, :, 0], func)
         xs[:, :, 1] = spread_once(xs[:, :, 1], func)
         xs[:, :, 2] = spread_once(xs[:, :, 2], func)
+        prev = err
+        err = ssim(im, xs, data_range=xs.max() - xs.min(), multichannel = True)
         #image = plt.imshow(xs, animated=True)
         #ims.append([image])
-        errs.append(np.mean((im - xs) ** 2))
+        errs.append(err)
+        #if(prev > err):
+            #break
 
     #ani = animation.ArtistAnimation(fig, ims, interval=20, blit=True, repeat_delay=100)
     #plt.show()
