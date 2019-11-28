@@ -1,11 +1,12 @@
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
 
 # Smooth,positive, non-increasing function g:
 def func(x):
-    return np.exp(-x)
+    return np.exp(-x**2)
 
 
 # Calculates the divergence at each point of the matrix x
@@ -19,11 +20,11 @@ def divergence(x):
 # Helper function that normalizes before plotting and makes everything ints
 def prepare_to_plot(xs):
     ranged = np.amax(xs) - np.amin(xs)
-    return (xs / ranged * 250).astype(int)
+    return ((xs + np.amin(xs)) / ranged * 255).astype(int)
 
 
 # Advance the matrix by one timestep (dt)
-def spread_once(xs, g, dt=0.1):
+def spread_once(xs, g = func, dt=0.1):
     grad = np.gradient(xs)
     magnitude_of_grad = grad[0] ** 2 + grad[1] ** 2
     g_at_each_point = g(magnitude_of_grad)
@@ -31,25 +32,30 @@ def spread_once(xs, g, dt=0.1):
     return xs + dt * (g_at_each_point * divergence(xs) + grad[0] * grad_of_g[0] + grad[1] * grad_of_g[1])
 
 
-# Store Image as a numpy array:
-im = cv2.imread("dog.jpg")
-xs = im.copy()
+if __name__ == '__main__':
 
-plt.imshow(prepare_to_plot(im))
-plt.show()
+    # Store Image as a numpy array:
+    im = cv2.imread("Apple.jpg")
+    xs = im.copy()
 
-# Add noise to the image:
-noise = np.random.randint(-50, 50, xs.shape)
-xs = xs + noise
+    plt.imshow(prepare_to_plot(im))
+    plt.show()
 
-plt.imshow(prepare_to_plot(xs))
-plt.show()
+    # Add noise to the image:
+    noise = np.random.randint(-50, 50, xs.shape)
+    xs = xs + noise
 
-# Perform the spreading on all the colours of the image for 30 timesteps:
-for i in range(20):
-    xs[:, :, 0] = spread_once(im[:, :, 0], func)
-    xs[:, :, 1] = spread_once(im[:, :, 1], func)
-    xs[:, :, 2] = spread_once(im[:, :, 2], func)
+    fig = plt.figure()
+    ims = []
+    ims.append([plt.imshow(xs, animated=True)])
 
-plt.imshow(prepare_to_plot(xs))
-plt.show()
+    for i in range(250):
+        xs[:, :, 0] = spread_once(xs[:, :, 0], func)
+        xs[:, :, 1] = spread_once(xs[:, :, 1], func)
+        xs[:, :, 2] = spread_once(xs[:, :, 2], func)
+        im = plt.imshow(xs, animated=True)
+        ims.append([im])
+
+    ani = animation.ArtistAnimation(fig, ims, interval=20, blit=True, repeat_delay=100)
+    plt.show()
+
