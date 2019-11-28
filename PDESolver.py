@@ -3,10 +3,11 @@ import cv2
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
+k = 100
 
 # Smooth,positive, non-increasing function g:
 def func(x):
-    return np.exp(-x**2)
+    return np.exp(-(x*k)**2)
 
 
 # Calculates the divergence at each point of the matrix x
@@ -14,7 +15,7 @@ def divergence(x):
     grad = np.gradient(x)
     xs = np.gradient(grad[0])[0]
     ys = np.gradient(grad[1])[1]
-    return np.sqrt(xs ** 2 + ys ** 2)
+    return xs + ys
 
 
 # Helper function that normalizes before plotting and makes everything ints
@@ -24,12 +25,12 @@ def prepare_to_plot(xs):
 
 
 # Advance the matrix by one timestep (dt)
-def spread_once(xs, g = func, dt=0.1):
+def spread_once(xs, g = func, dt=0.01):
     grad = np.gradient(xs)
-    magnitude_of_grad = grad[0] ** 2 + grad[1] ** 2
+    magnitude_of_grad = np.sqrt(grad[0] ** 2 + grad[1] ** 2)
     g_at_each_point = g(magnitude_of_grad)
-    grad_of_g = np.gradient(g_at_each_point)
-    return xs + dt * (g_at_each_point * divergence(xs) + grad[0] * grad_of_g[0] + grad[1] * grad_of_g[1])
+    #grad_of_g = np.gradient(g_at_each_point)
+    return xs + dt * (g_at_each_point * divergence(xs)) #+ grad[0] * grad_of_g[0] + grad[1] * grad_of_g[1])
 
 
 if __name__ == '__main__':
@@ -38,24 +39,33 @@ if __name__ == '__main__':
     im = cv2.imread("Apple.jpg")
     xs = im.copy()
 
-    plt.imshow(prepare_to_plot(im))
-    plt.show()
-
     # Add noise to the image:
     noise = np.random.randint(-50, 50, xs.shape)
     xs = xs + noise
 
-    fig = plt.figure()
-    ims = []
-    ims.append([plt.imshow(xs, animated=True)])
+    plt.imshow(xs)
+    plt.show()
 
-    for i in range(250):
+    fig = plt.figure()
+    #ims = []
+    errs = []
+    #ims.append([plt.imshow(xs, animated=True)])
+    errs.append(np.mean((im-xs)**2))
+
+    for i in range(200):
         xs[:, :, 0] = spread_once(xs[:, :, 0], func)
         xs[:, :, 1] = spread_once(xs[:, :, 1], func)
         xs[:, :, 2] = spread_once(xs[:, :, 2], func)
-        im = plt.imshow(xs, animated=True)
-        ims.append([im])
+        #image = plt.imshow(xs, animated=True)
+        #ims.append([image])
+        errs.append(np.mean((im - xs) ** 2))
 
-    ani = animation.ArtistAnimation(fig, ims, interval=20, blit=True, repeat_delay=100)
+    #ani = animation.ArtistAnimation(fig, ims, interval=20, blit=True, repeat_delay=100)
+    #plt.show()
+
+    plt.plot(errs)
+    plt.show()
+
+    plt.imshow(xs)
     plt.show()
 

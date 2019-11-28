@@ -28,7 +28,7 @@ class MyTestCase(unittest.TestCase):
         for i in range(20):
             latest = PDESolver.spread_once(latest)
         # Check if it is good:
-        self.assertTrue(np.mean((image[:, :, 0] - latest) ** 2) < 10.0)
+        self.assertTrue(erro2 > np.mean((image[:, :, 0] - latest) ** 2))
 
 
 if __name__ == '__main__':
