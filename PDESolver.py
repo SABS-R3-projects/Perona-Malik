@@ -40,7 +40,7 @@ def spread_once(xs, g = func, dt=0.02):
 if __name__ == '__main__':
 
     # Store Image as a numpy array:
-    im = cv2.imread("Apple.jpg")
+    im = cv2.imread("dog.jpg")
     xs = im.copy()
 
     # Add noise to the image:
