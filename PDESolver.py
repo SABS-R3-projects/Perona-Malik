@@ -3,6 +3,7 @@ import cv2
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
+
 k = 0.01
 
 # Smooth,positive, non-increasing function g:
