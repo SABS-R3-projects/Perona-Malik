@@ -70,8 +70,8 @@ def smooth_pic(input_m3d, dt=0.1, ld=1, iterations=20):
 
 def add_noise(real_im, noise=50):
 
-    noisy_im = real_im.copy()
-    noisy_im = noisy_im + np.random.randint(-noise, noise, noisy_im.shape)
+    noisy_im = real_im.copy().astype(int)
+    noisy_im[1:-1,1:-1,:] = noisy_im[1:-1,1:-1,:] + np.random.randint(-noise, noise, noisy_im[1:-1,1:-1,:].shape)
 
     return noisy_im
 
@@ -126,7 +126,7 @@ if __name__ == '__main__':
 
     small_im = im.copy()[125:225, 250:350, :]
 
-    added_noise = 10
+    added_noise = 100
 
     xs = add_noise(small_im, added_noise)
 
