@@ -36,21 +36,29 @@ All prerequisities are in the requirement.txt file.
 The package consists of two parts. 
 1. Smoothing of a picture (smoothpicture.py)
 2. Optimize for the best variables to smooth picture (opt.py)
+3. Creating an animation showing the imaging smoothing (animation.py)
+
 
 To smooth your picture you open the smoothpicture.py and manually
 insert the path to your image and run the code. This will result
 in three different smoothings of your picture from three different
 solvers (allowing you to chose the best one). Additionally, information
 about the smoothing process is also saved. You are also given the 
-option to change the timesteps (dt), lambda (ld) and g function.
+option to change the time step (dt), lambda (ld) and g function.
 
 The three solvers consists are:
-1. a finite difference (FD) solver,
-2. a FD written in numpy solver,
-3. and an anisotropic lib solver
+1. a finite difference (FD) solver (fd_solver),
+2. a FD written in numpy solver (numpy_solver),
+3. and an anisotropic lib solver (at_lib_solver)
 
 
-To optimize for the best dt and ld for your image open the opt.py script.
+To optimize for the best dt and ld for your image open opt.py. This will run, but will
+not optimize properly due to the nature of the similarity function in ld and dt space
+being very irregular.
+
+To create an animation of the image smoothing to open animation.py and manually
+insert the path to your image and run the code. This will create a gif of the smoothing
+using the numpy solver. WARNING: This script takes around 5 minutes for a large image.
 
 All results are saved in the Results folder.
 
