@@ -4,10 +4,8 @@ import cv2
 import os
 from skimage import measure
 
-
-
 def gfunc(x, ld):
-    return 1 / (1 + (np.power(x, 2) / np.power(ld, 2)))
+    return np.exp(-(x * ld) ** 2)
 
 
 def c_fd1(matrix, x, y):
@@ -52,7 +50,7 @@ def fd_smooth(input_m2d, dt=0.1, ld=1):
     return n_m2d
 
 
-def smooth_pic(input_m3d, dt=0.1, ld=1, iterations=20):
+def fdsolver(input_m3d, dt=0.1, ld=0.01, iterations=20):
 
     m3d = input_m3d.copy()
 
@@ -76,18 +74,18 @@ def add_noise(real_im, noise=50):
 
 def plot_results(real_im, noisy_im, smoothed_im, added_error):
     plt.figure(figsize=(15, 15))
-    plt.subplot(1, 4, 1)
+    plt.subplot(2, 2, 1)
     plt.imshow(real_im)
     plt.title("Original image.")
 
-    plt.subplot(1, 4, 2)
+    plt.subplot(2, 2, 2)
     compare_im = noisy_im
     plt.imshow(compare_im)
     RMSD = p_error(real_im, compare_im)
     SSIM = measure.compare_ssim(real_im, compare_im, data_range=compare_im.max() - compare_im.min(), multichannel=True)
     plt.title("Image after +- {0} of added noise.\n RMSD: {1:.2f} and SSIM: {2:.2f}.".format(added_error, RMSD, SSIM))
 
-    plt.subplot(1, 4, 3)
+    plt.subplot(2, 2, 3)
     compare_im = smoothed_im[:, :, :, 0]
     plt.imshow(compare_im.astype(int))
     RMSD = p_error(real_im, compare_im)
@@ -100,7 +98,7 @@ def plot_results(real_im, noisy_im, smoothed_im, added_error):
     m = max(smooth_scores)
     smooth_idx = [i for i, j in enumerate(smooth_scores) if j == m][0]
 
-    plt.subplot(1, 4, 4)
+    plt.subplot(2, 2, 4)
     compare_im = smoothed_im[:, :, :, smooth_idx]
     plt.imshow(compare_im.astype(int))
     RMSD = p_error(real_im, compare_im)
@@ -111,6 +109,7 @@ def plot_results(real_im, noisy_im, smoothed_im, added_error):
 
     plt.savefig(os.path.join('Results', 'fd_solver.png'), format='png')
 
+    plt.subplot(1, 1, 1)
     plt.plot(smooth_scores)
     plt.xlabel("Number of iterations")
     plt.ylabel("Similarity index")
