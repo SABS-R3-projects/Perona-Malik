@@ -100,13 +100,11 @@ def create_images(image, added_error):
     return im, xs
 
 
-def func_to_minimise(k, dt):
-    im, noisy_im = create_images("images/Test-img.png", 30)
-    img, errs = model(im, noisy_im, k, dt, 50)
-    return errs[-1][0]
-
-
 def minimise():
+    im, noisy_im = create_images("images/Test-img.png", 30)
+    def func_to_minimise(k, dt):
+        img, errs = model(im, noisy_im, k, dt, 50)
+        return -errs[-1][0]
     m = Minuit(func_to_minimise, k=0.1, dt=0.1, limit_dt=(0,1))
     m.migrad(ncall=30)
     return m.values["k"], m.values["dt"]
