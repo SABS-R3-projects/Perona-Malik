@@ -11,8 +11,8 @@ k = 0.01
 dt = 0.02
 
 
+# Helper function for multiprocessing. Do not call!!
 def spread_one_colour(image, g, dt0, dim, ld=0.01):
-
     image[:, :, dim] = spread_once(image[:, :, dim], dt=dt0, g=g, ld=ld)
     return image[:, :, dim]
 
