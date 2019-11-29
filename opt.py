@@ -103,7 +103,7 @@ def create_images(image, added_error):
 def func_to_minimise(k, dt):
     im, noisy_im = create_images("images/Test-img.png", 30)
     img, errs = model(im, noisy_im, k, dt, 50)
-    return errs[-1][0]
+    return -errs[-1][0]
 
 
 def minimise():
