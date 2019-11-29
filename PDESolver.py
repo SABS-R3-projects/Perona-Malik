@@ -7,7 +7,7 @@ from multiprocessing import Pool
 from functools import partial
 
 k = 0.01
-dt = 0.01
+dt = 0.02
 
 
 def spread_one_colour(image, g, dt0, dim):
@@ -57,7 +57,7 @@ def spread_colours(original_image, g=func, dt=dt):
     f = partial(spread_one_colour, image, g, dt)
     with Pool(3) as p:
         res = p.map(f, [0, 1, 2])
-        for i in [0,1,2]:
+        for i in [0, 1, 2]:
             image[:, :, i] = res[i]
 
     return image
@@ -67,15 +67,14 @@ if __name__ == '__main__':
 
     # Store Image as a numpy array:
     im = cv2.imread("Test-img.png")
-    xs = im.copy()  # .astype(float)
+    xs = im.copy().astype(int)
 
     # Add noise to the image:
     added_error = 50
     noise = np.random.randint(-added_error, added_error, xs.shape)
-    xs = xs + noise
+    xs[1:-1, 1:-1] = xs[1:-1, 1:-1] + noise[1:-1, 1:-1]
+    start = xs
 
-    # fig = plt.figure()
-    # ims = []
     err = ssim(im, xs, data_range=xs.max() - xs.min(), multichannel=True)
     err2 = np.var(im) / np.var(xs)
     errs = [[err, err2]]
@@ -86,10 +85,7 @@ if __name__ == '__main__':
         prev = err
         err = ssim(im, xs, data_range=xs.max() - xs.min(), multichannel=True)
         err2 = np.var(im) / np.var(xs)
-        # image = plt.imshow(xs, animated=True)
-        # ims.append([image])
         errs.append([err, err2])
-        print('err is ', err)
         if prev > err:
             a = a + 1
         else:
@@ -99,11 +95,9 @@ if __name__ == '__main__':
             print("Similarity value = " + str(err))
             break
 
-    # ani = animation.ArtistAnimation(fig, ims, interval=20, blit=True, repeat_delay=100)
-    # plt.show()
     plt.figure(figsize=(20, 20))
     plt.subplot(1, 3, 1)
-    plt.imshow(im + noise)
+    plt.imshow(start)
     plt.title("Image after +-" + str(added_error) + " of added noise")
 
     plt.subplot(1, 3, 2)
