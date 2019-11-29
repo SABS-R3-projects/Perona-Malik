@@ -81,8 +81,6 @@ def model(orig_image, noisy_image, k, dt, iterations=200):
         else:
             a = 0
         if (prev > err) and (a == 2):
-            print("Only did " + str(i) + " runs")
-            print("Similarity value = " + str(err))
             break
 
     return xs, errs
@@ -115,22 +113,5 @@ if __name__ == "__main__":
     im, noisy_im = create_images("images/Test-img.png", added_error)
 
     xs, errs = model(im, noisy_im, 0.01, 0.01, iterations=50)
-
-
-    ''' ===PLOTTING=== 
-    plt.figure(figsize=(20, 20))
-    plt.subplot(1, 3, 1)
-    plt.imshow(noisy_im)
-    plt.title("Image after +-" + str(added_error) + " of added noise")
-
-    plt.subplot(1, 3, 2)
-    plt.imshow(xs)
-    plt.title("Image after smoothing")
-
-    ax3 = plt.subplot(1, 3, 3)
-    ax3.plot(errs)
-    ax3.set_aspect("auto")
-    plt.legend(["Similarity index", "Variance ratio"])
-    plt.title("Evolution of similarity")
-    plt.show()
-'''
+    k, dt = minimise()
+    print('The optimal k is: ', k, ' and the optimal dt is: ', dt)
