@@ -20,10 +20,9 @@ def spread_one_colour(image, g, dt0, dim, ld=0.01):
     return image[:, :, dim]
 
 
-# Smooth,positive, non-increasing function g:
 def func(x, k=0.01):
     """
-    User defined g function.
+    User defined, smooth, positive, non-increasing function g:
     :param x: Function input (float)
     :param k: User defined parameter. Should be less than one and larger than 0
     :return: Function output (float)
@@ -31,7 +30,6 @@ def func(x, k=0.01):
     return np.exp(-(x * k) ** 2)
 
 
-# Calculates the divergence at each point of the matrix x
 def divergence(x):
     """
     Calculates the divergence at each point of the matrix x.
@@ -43,7 +41,6 @@ def divergence(x):
     ys = np.gradient(grad[1])[1]
     return xs + ys
 
-# Advance the matrix by one timestep (dt)
 def spread_once(xs, g=func, dt=dt, ld=0.01):
     """
     Evolves the input matrix by one timestep (dt) using the Perona-Malik equation.
