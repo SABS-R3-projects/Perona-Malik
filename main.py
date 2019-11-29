@@ -1,14 +1,22 @@
 import cv2
 from PDEfdsolver import *
+#from PDESolver import *
+
 
 im = cv2.imread("cat.jpg")
-small_im = im.copy()[125:225, 250:350, :]
+im = im.copy()[125:225, 250:350, :]
 
+dt = 0.1
+ld = 0.01
+iterations = 20
 added_noise = 100
 
-xs = add_noise(small_im, added_noise)
-smoothed_im = smooth_pic(xs, dt=0.1, ld=100, iterations=20)
+noise_im = add_noise(im, added_noise)
 
-plot_results(small_im, xs, smoothed_im, added_noise)
+
+
+
+smoothed_im = fdsolver(noise_im, dt, ld, iterations)
+plot_results(im, noise_im, smoothed_im, added_noise)
 
 
