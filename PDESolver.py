@@ -6,7 +6,7 @@ from skimage.metrics import structural_similarity as ssim
 from multiprocessing import Pool
 from functools import partial
 
-k = 0.005
+k = 0.01
 dt = 0.02
 
 
@@ -75,8 +75,6 @@ if __name__ == '__main__':
     xs[1:-1, 1:-1] = xs[1:-1, 1:-1] + noise[1:-1, 1:-1]
     start = xs
 
-    # fig = plt.figure()
-    # ims = []
     err = ssim(im, xs, data_range=xs.max() - xs.min(), multichannel=True)
     err2 = np.var(im) / np.var(xs)
     errs = [[err, err2]]
@@ -87,8 +85,6 @@ if __name__ == '__main__':
         prev = err
         err = ssim(im, xs, data_range=xs.max() - xs.min(), multichannel=True)
         err2 = np.var(im) / np.var(xs)
-        # image = plt.imshow(xs, animated=True)
-        # ims.append([image])
         errs.append([err, err2])
         if prev > err:
             a = a + 1
@@ -99,8 +95,6 @@ if __name__ == '__main__':
             print("Similarity value = " + str(err))
             break
 
-    # ani = animation.ArtistAnimation(fig, ims, interval=20, blit=True, repeat_delay=100)
-    # plt.show()
     plt.figure(figsize=(20, 20))
     plt.subplot(1, 3, 1)
     plt.imshow(start)
