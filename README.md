@@ -14,8 +14,22 @@ link.
 
 ### Prerequisites and Installing
 
-All prerequisities are in the requirement.txt file.
+First clone the following github.
 
+     git clone https://github.com/SABS-R3-projects/Perona-Malik.git
+
+Then go to the Perona-Malik directory you just cloned and 
+create a virtual environment using pip or conda. The following shows how to do it
+with pip. 
+
+    python3 -m venv my_env
+    
+Then activate the environment and install the requirements.
+
+    source my_env/bin/activate
+    pip install -r requirements.txt
+    
+All prerequisities are in the requirement.txt file.
 
 ### Getting Started
 
@@ -38,6 +52,7 @@ The three solvers consists are:
 
 To optimize for the best dt and ld for your image open the opt.py script.
 
+All results are saved in the Results folder.
 
 ### Running the tests
 
