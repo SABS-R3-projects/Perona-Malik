@@ -5,6 +5,7 @@ import matplotlib.animation as animation
 from skimage.metrics import structural_similarity as ssim
 from multiprocessing import Pool
 from functools import partial
+from iminuit import Minuit
 
 
 def spread_one_colour(image, g, dt0, k, dim):
@@ -60,9 +61,9 @@ def spread_colours(original_image, g=func, dt=0.01, k=0.01):
     return image
 
 
-def model(im, k, dt, iterations=200):
-    xs = im.copy()
-
+def model(orig_image, noisy_image, k, dt, iterations=200):
+    im = orig_image
+    xs = noisy_image
     err = ssim(im, xs, data_range=xs.max() - xs.min(), multichannel=True)
     err2 = np.var(im) / np.var(xs)
     errs = [[err, err2]]
@@ -99,13 +100,26 @@ def create_images(image, added_error):
     return im, xs
 
 
+def func_to_minimise(k, dt):
+    im, noisy_im = create_images("images/Test-img.png", 30)
+    img, errs = model(im, noisy_im, k, dt, 50)
+    return errs[-1][0]
+
+
+def minimise():
+    m = Minuit(func_to_minimise, k=0.1, dt=0.1, limit_dt=(0,1))
+    m.migrad(ncall=30)
+    return m.values["k"], m.values["dt"]
+
+
 if __name__ == "__main__":
     added_error = 20
     im, noisy_im = create_images("images/Test-img.png", added_error)
 
-    xs, errs = model(noisy_im, 0.01, 0.01, iterations=50)
+    xs, errs = model(im, noisy_im, 0.01, 0.01, iterations=50)
 
-    ''' ===PLOTTING=== '''
+
+    ''' ===PLOTTING=== 
     plt.figure(figsize=(20, 20))
     plt.subplot(1, 3, 1)
     plt.imshow(noisy_im)
@@ -121,4 +135,4 @@ if __name__ == "__main__":
     plt.legend(["Similarity index", "Variance ratio"])
     plt.title("Evolution of similarity")
     plt.show()
-
+'''
