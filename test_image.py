@@ -5,8 +5,8 @@ import numpy as np
 import cv2
 from skimage.metrics import structural_similarity as ssim
 
-
 image = cv2.imread("images/Apple.jpg")
+
 
 class MyPDESolverTests(unittest.TestCase):
 
@@ -46,7 +46,6 @@ class MyPDESolverTests(unittest.TestCase):
         self.assertTrue(err3 > similarity2)
         self.assertTrue(variance_1 > np.var(latest))
 
-
     # Checking second implementation
     def test_PDESolver(self):
         # Strip it to one colour:
@@ -77,7 +76,6 @@ class MyPDESolverTests(unittest.TestCase):
         err3 = ssim(image[:, :, 0], latest, data_range=latest.max() - latest.min())
         self.assertTrue(err3 > similarity2)
         self.assertTrue(variance_1 > np.var(latest))
-
 
 
 if __name__ == '__main__':
