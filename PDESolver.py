@@ -11,39 +11,45 @@ k = 0.01
 dt = 0.02
 
 
-# Helper function for multiprocessing. Do not call!!
 def spread_one_colour(image, g, dt0, dim, ld=0.01):
+    """
+    Helper function for multiprocessing. Do not call!!
+    Has to be defined at the top of the file for some reason
+    """
     image[:, :, dim] = spread_once(image[:, :, dim], dt=dt0, g=g, ld=ld)
     return image[:, :, dim]
 
 
-# Smooth,positive, non-increasing function g:
 def func(x, k=0.01):
+    """
+    User defined, smooth, positive, non-increasing function g:
+    :param x: Function input (float)
+    :param k: User defined parameter. Should be less than one and larger than 0
+    :return: Function output (float)
+    """
     return np.exp(-(x * k) ** 2)
 
 
-# Calculates the divergence at each point of the matrix x
 def divergence(x):
+    """
+    Calculates the divergence at each point of the matrix x.
+    :param x: Input matrix.
+    :return: Returns a matrix containing the divergence at each point of the input matrix
+    """
     grad = np.gradient(x)
     xs = np.gradient(grad[0])[0]
     ys = np.gradient(grad[1])[1]
     return xs + ys
 
-
-# Helper function that normalizes before plotting
-def prepare_to_plot(xs, normalize=True):
-    if normalize:
-        im = xs.copy()
-        for i in range(3):
-            ranged = np.amax(xs[:, :, i]) - np.amin(xs[:, :, i])
-            im[:, :, i] = (xs[:, :, i] - np.amin(xs[:, :, i])) / ranged
-        return im
-    else:
-        return xs / 255.0
-
-
-# Advance the matrix by one timestep (dt)
 def spread_once(xs, g=func, dt=dt, ld=0.01):
+    """
+    Evolves the input matrix by one timestep (dt) using the Perona-Malik equation.
+    :param xs: Input matrix to be evolved
+    :param g: User defined function to be used in the Perona-Malik algorithm
+    :param dt: Timestep (measure of amount of correction)
+    :param ld: Parameter in the user defined function
+    :return: Matrix after one timestep
+    """
     grad = np.gradient(xs)
     magnitude_of_grad = np.sqrt(grad[0] ** 2 + grad[1] ** 2)
     g_at_each_point = g(magnitude_of_grad, ld)
@@ -55,6 +61,14 @@ def spread_once(xs, g=func, dt=dt, ld=0.01):
 
 
 def spread_colours(original_image, g=func, dt=dt, ld=0.01):
+    """
+    Evolves each colour in an image by one timestep (dt) according to the Perona-Malik equation.
+    :param original_image: Image to be evolved
+    :param g: User defined function to be used in the Perona-Malik algorithm
+    :param dt: Timestep (measure of amount of correction)
+    :param ld: Parameter in the user defined function
+    :return: Evolved image after one timestep
+    """
     image = original_image.copy()
     f = partial(spread_one_colour, image, g, dt, ld=ld)
     with Pool(3) as p:
