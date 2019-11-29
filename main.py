@@ -1,6 +1,6 @@
 import cv2
 from PDEfdsolver import *
-#from PDESolver import *
+from PDESolver import *
 
 
 im = cv2.imread("images/cat.jpg")
@@ -13,10 +13,7 @@ added_noise = 100
 
 noise_im = add_noise(im, added_noise)
 
-
-
-
-smoothed_im = fdsolver(noise_im, dt, ld, iterations)
+smoothed_im = fdsolver(noise_im, gfunc, dt, ld, iterations)
 plot_results(im, noise_im, smoothed_im, added_noise)
 
 

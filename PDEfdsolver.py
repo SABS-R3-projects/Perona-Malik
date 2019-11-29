@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cv2
 import os
-from skimage import measure
+from skimage.metrics import structural_similarity as ssim
 
 def gfunc(x, ld):
     return np.exp(-(x * ld) ** 2)
@@ -26,7 +26,7 @@ def c_fd2(matrix, x, y):
     return x1 + y1
 
 
-def fd_smooth(input_m2d, dt=0.1, ld=1):
+def fd_smooth(input_m2d, gfunc, dt=0.1, ld=1):
 
     m2d = input_m2d.copy()
     msize = m2d.shape
@@ -50,16 +50,16 @@ def fd_smooth(input_m2d, dt=0.1, ld=1):
     return n_m2d
 
 
-def fdsolver(input_m3d, dt=0.1, ld=0.01, iterations=20):
+def fdsolver(input_m3d, gfunc, dt=0.1, ld=0.01, iterations=20):
 
     m3d = input_m3d.copy()
 
     m4d = np.zeros(m3d.shape + (iterations,))
 
     for niter in range(iterations):
-        m3d[:, :, 0] = fd_smooth(m3d[:, :, 0], dt, ld)
-        m3d[:, :, 1] = fd_smooth(m3d[:, :, 1], dt, ld)
-        m3d[:, :, 2] = fd_smooth(m3d[:, :, 2], dt, ld)
+        m3d[:, :, 0] = fd_smooth(m3d[:, :, 0], gfunc, dt, ld)
+        m3d[:, :, 1] = fd_smooth(m3d[:, :, 1], gfunc, dt, ld)
+        m3d[:, :, 2] = fd_smooth(m3d[:, :, 2], gfunc, dt, ld)
 
         m4d[:, :, :, niter] = m3d
 
@@ -73,7 +73,7 @@ def add_noise(real_im, noise=50):
     return noisy_im
 
 def plot_results(real_im, noisy_im, smoothed_im, added_error):
-    plt.figure(figsize=(15, 15))
+    plt.figure(figsize=(10, 10))
     plt.subplot(2, 2, 1)
     plt.imshow(real_im)
     plt.title("Original image.")
@@ -82,18 +82,18 @@ def plot_results(real_im, noisy_im, smoothed_im, added_error):
     compare_im = noisy_im
     plt.imshow(compare_im)
     RMSD = p_error(real_im, compare_im)
-    SSIM = measure.compare_ssim(real_im, compare_im, data_range=compare_im.max() - compare_im.min(), multichannel=True)
+    SSIM = ssim(real_im, compare_im, data_range=compare_im.max() - compare_im.min(), multichannel=True)
     plt.title("Image after +- {0} of added noise.\n RMSD: {1:.2f} and SSIM: {2:.2f}.".format(added_error, RMSD, SSIM))
 
     plt.subplot(2, 2, 3)
     compare_im = smoothed_im[:, :, :, 0]
     plt.imshow(compare_im.astype(int))
     RMSD = p_error(real_im, compare_im)
-    SSIM = measure.compare_ssim(real_im, compare_im, data_range=compare_im.max() - compare_im.min(), multichannel=True)
+    SSIM = ssim(real_im, compare_im, data_range=compare_im.max() - compare_im.min(), multichannel=True)
     plt.title("After running 1 iteration.\n RMSD: {1:.2f} and SSIM: {2:.2f}.".format(added_error, RMSD, SSIM))
 
     smooth_scores = [
-        measure.compare_ssim(real_im, smoothed_im[:, :, :, i], data_range=real_im.max() - real_im.min(), multichannel=True) for i
+        ssim(real_im, smoothed_im[:, :, :, i], data_range=real_im.max() - real_im.min(), multichannel=True) for i
         in range(smoothed_im.shape[-1])]
     m = max(smooth_scores)
     smooth_idx = [i for i, j in enumerate(smooth_scores) if j == m][0]
@@ -102,7 +102,7 @@ def plot_results(real_im, noisy_im, smoothed_im, added_error):
     compare_im = smoothed_im[:, :, :, smooth_idx]
     plt.imshow(compare_im.astype(int))
     RMSD = p_error(real_im, compare_im)
-    SSIM = measure.compare_ssim(real_im, compare_im, data_range=compare_im.max() - compare_im.min(), multichannel=True)
+    SSIM = ssim(real_im, compare_im, data_range=compare_im.max() - compare_im.min(), multichannel=True)
     plt.title(
         "After running {3} iterations (best SSIM).\n RMSD: {1:.2f} and SSIM: {2:.2f}.".format(added_error, RMSD, SSIM,
                                                                                               smooth_idx))
@@ -133,6 +133,6 @@ if __name__ == '__main__':
 
     xs = add_noise(small_im, added_noise)
 
-    smoothed_im = smooth_pic(xs, dt=0.1, ld=100, iterations=20)
+    smoothed_im = fdsolver(xs, gfunc, dt=0.1, ld=100, iterations=20)
 
     plot_results(small_im, xs, smoothed_im, added_noise)
