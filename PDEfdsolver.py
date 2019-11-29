@@ -26,7 +26,7 @@ def c_fd2(matrix, x, y):
     return x1 + y1
 
 
-def fd_smooth(input_m2d, gfunc, dt=0.1, ld=1):
+def fd_smooth(input_m2d, gfunc=gfunc, dt=0.1, ld=1):
 
     m2d = input_m2d.copy()
     msize = m2d.shape
@@ -50,7 +50,7 @@ def fd_smooth(input_m2d, gfunc, dt=0.1, ld=1):
     return n_m2d
 
 
-def fdsolver(input_m3d, gfunc, dt=0.1, ld=0.01, iterations=20):
+def fdsolver(input_m3d, gfunc=gfunc, dt=0.1, ld=0.01, iterations=20):
 
     m3d = input_m3d.copy()
 

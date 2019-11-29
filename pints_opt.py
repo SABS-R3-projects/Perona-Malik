@@ -60,8 +60,8 @@ def spread_colours(original_image, g=func, dt=0.01, k=0.01):
     return image
 
 
-def model(image, k, dt, iterations=200):
-    xs = image
+def model(im, k, dt, iterations=200):
+    xs = im.copy()
 
     err = ssim(im, xs, data_range=xs.max() - xs.min(), multichannel=True)
     err2 = np.var(im) / np.var(xs)
