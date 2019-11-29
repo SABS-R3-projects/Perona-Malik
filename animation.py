@@ -29,4 +29,4 @@ for i in range(10):
 
 # Create animation and save to gif
 ani = animation.ArtistAnimation(fig, ims, interval=250, blit=True, repeat_delay=100)
-ani.save("animated_dog.gif", writer='imagemagick', fps=5)
+ani.save(file + "_animated_.gif", writer='imagemagick', fps=5)
