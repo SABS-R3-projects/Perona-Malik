@@ -14,17 +14,19 @@ added_error = 50
 noise = np.random.randint(-added_error, added_error, xs.shape)
 xs[1:-1, 1:-1] = xs[1:-1, 1:-1] + noise[1:-1, 1:-1]
 
-# Initialize figure
+# Initialize figure and plot initial image
 fig = plt.figure()
 image = plt.imshow(xs, animated=True)
-plt.show()
 ims = [[image]]
 
-for i in range(500):
-    xs = spread_colours(xs)
+# Do image spreading
+for i in range(100):
+    # Only plot image after 5 runs
+    for j in range(5):
+        xs = spread_colours(xs)
     image = plt.imshow(xs, animated=True)
     ims.append([image])
 
-ani = animation.ArtistAnimation(fig, ims, interval=100, blit=True, repeat_delay=100)
-#ani.save("animated_" + file + ".gif", writer='imagemagick', fps=200)
-plt.show()
+# Create animation and save to gif
+ani = animation.ArtistAnimation(fig, ims, interval=250, blit=True, repeat_delay=100)
+ani.save("animated_" + file + ".gif", writer='imagemagick', fps=5)
