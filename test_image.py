@@ -5,11 +5,17 @@ import cv2
 from skimage.metrics import structural_similarity as ssim
 
 
-class MyTestCase(unittest.TestCase):
-    def test_tests(self):
-        self.assertEqual(True, True)
+class MyPDESolverTests(unittest.TestCase):
 
-    def test_image(self):
+    def test_dummies(self):
+        self.assertEqual(True, True)
+        image = cv2.imread("images/Apple.jpg")
+        self.assertEqual(image.dtype, np.uint8)
+        xs = PDESolver.spread_colours(image)
+        self.assertEqual(xs.dtype, np.uint8)
+        self.assertEqual(image.shape, xs.shape)
+
+    def test_PDESolver(self):
         image = cv2.imread("images/Apple.jpg")
         # Test it has three colours
         self.assertEqual(image.shape[2], 3)

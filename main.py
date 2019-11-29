@@ -3,7 +3,7 @@ from PDEfdsolver import *
 #from PDESolver import *
 
 
-im = cv2.imread("cat.jpg")
+im = cv2.imread("images/cat.jpg")
 im = im.copy()[125:225, 250:350, :]
 
 dt = 0.1
