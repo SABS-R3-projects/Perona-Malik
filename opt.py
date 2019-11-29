@@ -75,7 +75,7 @@ def model(orig_image, noisy_image, k, dt, iterations=200):
         err = ssim(im, xs, data_range=xs.max() - xs.min(), multichannel=True)
         err2 = np.var(im) / np.var(xs)
         errs.append([err, err2])
-
+        # If image gets worse stop iterating
         if prev > err:
             a = a + 1
         else:
@@ -98,13 +98,13 @@ def create_images(image, added_error):
     return im, xs
 
 
-def minimise():
+def minimise(call_number):
     im, noisy_im = create_images("images/Test-img.png", 30)
     def func_to_minimise(k, dt):
         img, errs = model(im, noisy_im, k, dt, 50)
         return -errs[-1][0]
-    m = Minuit(func_to_minimise, k=0.1, dt=0.1, limit_dt=(0,1))
-    m.migrad(ncall=30)
+    m = Minuit(func_to_minimise, k=0.01, dt=0.01, limit_dt=(0,1))
+    m.migrad(ncall=call_number)
     return m.values["k"], m.values["dt"]
 
 
@@ -113,5 +113,5 @@ if __name__ == "__main__":
     im, noisy_im = create_images("images/Test-img.png", added_error)
 
     xs, errs = model(im, noisy_im, 0.01, 0.01, iterations=50)
-    k, dt = minimise()
+    k, dt = minimise(30)
     print('The optimal k is: ', k, ' and the optimal dt is: ', dt)
