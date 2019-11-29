@@ -5,8 +5,8 @@ import matplotlib.animation as animation
 from PDESolver import spread_colours
 
 # Store Image as a numpy array:
-file = "images/dog"
-im = cv2.imread(file + ".jpg")
+file = "Apple"
+im = cv2.imread("images/" + file + ".jpg")
 xs = im.copy().astype(int)
 
 # Add noise to the image:
@@ -20,7 +20,7 @@ image = plt.imshow(xs, animated=True)
 ims = [[image]]
 
 # Do image spreading
-for i in range(10):
+for i in range(20):
     # Only plot image after 5 runs
     for j in range(5):
         xs = spread_colours(xs)
@@ -29,4 +29,4 @@ for i in range(10):
 
 # Create animation and save to gif
 ani = animation.ArtistAnimation(fig, ims, interval=250, blit=True, repeat_delay=100)
-ani.save("animated_dog.gif", writer='imagemagick', fps=5)
+ani.save("Results/" + file + "_animated_.gif", writer='imagemagick', fps=5)
