@@ -7,6 +7,7 @@ from PDESolver import spread_colours
 # Store Image as a numpy array:
 file = "Apple"
 im = cv2.imread("images/" + file + ".jpg")
+im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
 xs = im.copy().astype(int)
 
 # Add noise to the image:
