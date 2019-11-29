@@ -115,7 +115,7 @@ def plot_results(real_im, noisy_im, smoothed_im, added_error):
     plt.ylabel("Similarity index")
     plt.title("Evolution of similarity index")
 
-    plt.savefig(os.path.join('Results', 'fd_solver_over_iter.png'), format='png')
+    plt.savefig(os.path.join('Results', 'fd_solver_graph.png'), format='png')
 
 def p_error(pic1, pic2):
     am = pic1 - pic2

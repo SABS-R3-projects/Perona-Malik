@@ -3,6 +3,7 @@ import cv2
 import matplotlib.pyplot as plt
 from medpy.filter.smoothing import anisotropic_diffusion
 from skimage.measure import compare_ssim as ssim
+import os
 
 
 img = np.random.uniform(size=(32,32))
@@ -38,13 +39,15 @@ def filter(xs):
     img_filtered = anisotropic_diffusion(xs, gamma = 0.1, kappa = 40, niter = 20, option=1)
     return prepare_to_plot(img_filtered)
 
-def plot_images(xs):
+def plot_images(im, noisy_im):
     """
     Method used to display a panel of images before and after noise removal
     :param xs: An array corresponding to a clean image to be imported
     :return: A panel of the original image, image with noise added, and an image with the noise filtered
     """
-    noisy_image = add_noise(xs)
+    xs = im.copy()
+    noisy_image = noisy_im.copy()
+
     filtered_image = filter(noisy_image)
     original_image = prepare_to_plot(xs)
     #ssim calculates the structural similarity index between the noisy and the filtered image. The less the similarity index, the cleaner the filtered image
@@ -61,6 +64,9 @@ def plot_images(xs):
     plt.subplot(1, 3, 3)
     plt.imshow(filtered_image)
     plt.xlabel("Filtered Image")
-    plt.show()
+    plt.savefig(os.path.join('Results', 'at_lib_solver.png'),format='png')
 
-plot_images(xs)
+
+noisy_im = add_noise(xs)
+
+plot_images(xs, noisy_im)
