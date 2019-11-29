@@ -5,7 +5,7 @@ import matplotlib.animation as animation
 from PDESolver import spread_colours
 
 # Store Image as a numpy array:
-file = "dog"
+file = "images/dog"
 im = cv2.imread(file + ".jpg")
 xs = im.copy().astype(int)
 

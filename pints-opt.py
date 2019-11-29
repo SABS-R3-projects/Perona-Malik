@@ -101,7 +101,7 @@ def create_images(image, added_error):
 
 if __name__ == "__main__":
     added_error = 20
-    im, noisy_im = create_images("Test-img.png", added_error)
+    im, noisy_im = create_images("images/Test-img.png", added_error)
 
     xs, errs = model(noisy_im, 0.01, 0.01, iterations=50)
 
