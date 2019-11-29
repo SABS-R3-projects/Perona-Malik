@@ -20,7 +20,7 @@ image = plt.imshow(xs, animated=True)
 ims = [[image]]
 
 # Do image spreading
-for i in range(100):
+for i in range(10):
     # Only plot image after 5 runs
     for j in range(5):
         xs = spread_colours(xs)
@@ -29,4 +29,4 @@ for i in range(100):
 
 # Create animation and save to gif
 ani = animation.ArtistAnimation(fig, ims, interval=250, blit=True, repeat_delay=100)
-ani.save("animated_" + file + ".gif", writer='imagemagick', fps=5)
+ani.save("animated_dog.gif", writer='imagemagick', fps=5)
