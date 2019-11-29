@@ -6,7 +6,7 @@ from skimage.measure import compare_ssim as ssim
 
 
 img = np.random.uniform(size=(32,32))
-im = cv2.imread("Apple.jpg")
+im = cv2.imread("images/Apple.jpg")
 im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)# Changing the order of the color channel to RGB to get
                                         #a red apple rather than a blue one
 xs = im.copy()

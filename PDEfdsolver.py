@@ -125,7 +125,7 @@ def p_error(pic1, pic2):
 if __name__ == '__main__':
 
     # Store Image as a numpy array:
-    im = cv2.imread("cat.jpg")
+    im = cv2.imread("images/cat.jpg")
 
     small_im = im.copy()[125:225, 250:350, :]
 

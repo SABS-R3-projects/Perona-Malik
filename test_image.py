@@ -10,7 +10,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(True, True)
 
     def test_image(self):
-        image = cv2.imread("Apple.jpg")
+        image = cv2.imread("images/Apple.jpg")
         # Test it has three colours
         self.assertEqual(image.shape[2], 3)
         # Strip it to one colour:

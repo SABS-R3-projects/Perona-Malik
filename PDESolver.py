@@ -66,7 +66,7 @@ def spread_colours(original_image, g=func, dt=dt):
 if __name__ == '__main__':
 
     # Store Image as a numpy array:
-    im = cv2.imread("Test-img.png")
+    im = cv2.imread("images/Test-img.png")
     xs = im.copy().astype(int)
 
     # Add noise to the image:
