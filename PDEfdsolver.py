@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
+import os
 from skimage import measure
 
 
@@ -58,8 +59,6 @@ def smooth_pic(input_m3d, dt=0.1, ld=1, iterations=20):
     m4d = np.zeros(m3d.shape + (iterations,))
 
     for niter in range(iterations):
-        print(niter)
-
         m3d[:, :, 0] = fd_smooth(m3d[:, :, 0], dt, ld)
         m3d[:, :, 1] = fd_smooth(m3d[:, :, 1], dt, ld)
         m3d[:, :, 2] = fd_smooth(m3d[:, :, 2], dt, ld)
@@ -76,7 +75,7 @@ def add_noise(real_im, noise=50):
     return noisy_im
 
 def plot_results(real_im, noisy_im, smoothed_im, added_error):
-    plt.figure(figsize=(15, 10))
+    plt.figure(figsize=(15, 15))
     plt.subplot(1, 4, 1)
     plt.imshow(real_im)
     plt.title("Original image.")
@@ -96,7 +95,7 @@ def plot_results(real_im, noisy_im, smoothed_im, added_error):
     plt.title("After running 1 iteration.\n RMSD: {1:.2f} and SSIM: {2:.2f}.".format(added_error, RMSD, SSIM))
 
     smooth_scores = [
-        measure.compare_ssim(small_im, smoothed_im[:, :, :, i], data_range=xs.max() - xs.min(), multichannel=True) for i
+        measure.compare_ssim(real_im, smoothed_im[:, :, :, i], data_range=real_im.max() - real_im.min(), multichannel=True) for i
         in range(smoothed_im.shape[-1])]
     m = max(smooth_scores)
     smooth_idx = [i for i, j in enumerate(smooth_scores) if j == m][0]
@@ -109,10 +108,15 @@ def plot_results(real_im, noisy_im, smoothed_im, added_error):
     plt.title(
         "After running {3} iterations (best SSIM).\n RMSD: {1:.2f} and SSIM: {2:.2f}.".format(added_error, RMSD, SSIM,
                                                                                               smooth_idx))
-    plt.show()
+
+    plt.savefig(os.path.join('Results', 'fd_solver.png'), format='png')
 
     plt.plot(smooth_scores)
-    plt.show()
+    plt.xlabel("Number of iterations")
+    plt.ylabel("Similarity index")
+    plt.title("Evolution of similarity index")
+
+    plt.savefig(os.path.join('Results', 'fd_solver_over_iter.png'), format='png')
 
 def p_error(pic1, pic2):
     am = pic1 - pic2
