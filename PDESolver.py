@@ -3,9 +3,17 @@ import cv2
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from skimage.metrics import structural_similarity as ssim
+from multiprocessing import Pool
+from functools import partial
 
-k = 0.01
-dt = 0.01
+k = 0.005
+dt = 0.02
+
+
+def spread_one_colour(image, g, dt0, dim):
+    image[:, :, dim] = spread_once(image[:, :, dim], dt=dt0, g=g)
+    return image[:, :, dim]
+
 
 # Smooth,positive, non-increasing function g:
 def func(x):
@@ -21,7 +29,7 @@ def divergence(x):
 
 
 # Helper function that normalizes before plotting
-def prepare_to_plot(xs, normalize = True):
+def prepare_to_plot(xs, normalize=True):
     if normalize:
         im = xs.copy()
         for i in range(3):
@@ -29,7 +37,7 @@ def prepare_to_plot(xs, normalize = True):
             im[:, :, i] = (xs[:, :, i] - np.amin(xs[:, :, i])) / ranged
         return im
     else:
-        return xs/255.0
+        return xs / 255.0
 
 
 # Advance the matrix by one timestep (dt)
@@ -44,16 +52,28 @@ def spread_once(xs, g=func, dt=dt):
     return xs
 
 
+def spread_colours(original_image, g=func, dt=dt):
+    image = original_image.copy()
+    f = partial(spread_one_colour, image, g, dt)
+    with Pool(3) as p:
+        res = p.map(f, [0, 1, 2])
+        for i in [0, 1, 2]:
+            image[:, :, i] = res[i]
+
+    return image
+
+
 if __name__ == '__main__':
 
     # Store Image as a numpy array:
-    im = cv2.imread("dog.jpg")
-    xs = im.copy()#.astype(float)
+    im = cv2.imread("Test-img.png")
+    xs = im.copy().astype(int)
 
     # Add noise to the image:
     added_error = 50
     noise = np.random.randint(-added_error, added_error, xs.shape)
-    xs = xs + noise
+    xs[1:-1, 1:-1] = xs[1:-1, 1:-1] + noise[1:-1, 1:-1]
+    start = xs
 
     # fig = plt.figure()
     # ims = []
@@ -63,9 +83,7 @@ if __name__ == '__main__':
     a = 0
 
     for i in range(200):
-        xs[:, :, 0] = spread_once(xs[:, :, 0], func)
-        xs[:, :, 1] = spread_once(xs[:, :, 1], func)
-        xs[:, :, 2] = spread_once(xs[:, :, 2], func)
+        xs = spread_colours(xs)
         prev = err
         err = ssim(im, xs, data_range=xs.max() - xs.min(), multichannel=True)
         err2 = np.var(im) / np.var(xs)
@@ -83,9 +101,9 @@ if __name__ == '__main__':
 
     # ani = animation.ArtistAnimation(fig, ims, interval=20, blit=True, repeat_delay=100)
     # plt.show()
-    plt.figure(figsize=(20,20))
+    plt.figure(figsize=(20, 20))
     plt.subplot(1, 3, 1)
-    plt.imshow(im+noise)
+    plt.imshow(start)
     plt.title("Image after +-" + str(added_error) + " of added noise")
 
     plt.subplot(1, 3, 2)
