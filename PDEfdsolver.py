@@ -5,10 +5,25 @@ import os
 from skimage.metrics import structural_similarity as ssim
 
 def gfunc(x, ld):
+    """
+    Standard g function used in the Perona-Malik equation.
+
+    :param x: float
+    :param ld: float variable changing the curve of the g function
+    :return: float
+    """
     return np.exp(-(x * ld) ** 2)
 
 
 def c_fd1(matrix, x, y):
+    """
+    Central difference of a given x and y in matrix matrix.
+
+    :param matrix: np.array matrix
+    :param x: int x coordinate
+    :param y: int y coordinate
+    :return: The central difference of a given x and y in matrix matrix
+    """
     x1 = (matrix[x + 1, y] - matrix[x - 1, y]) / 2 * 1
     y1 = (matrix[x, y + 1] - matrix[x, y - 1]) / 2 * 1
 
@@ -16,10 +31,24 @@ def c_fd1(matrix, x, y):
 
 
 def mag(vec):
+    """
+    Magnitude of a vector.
+
+    :param vec: np.array vector
+    :return: float magnitude of vector vec
+    """
     return np.sqrt(np.sum(np.power(vec, 2)))
 
 
 def c_fd2(matrix, x, y):
+    """
+    Second Central difference of a given x and y in matrix matrix.
+
+    :param matrix: np.array matrix
+    :param x: int x coordinate
+    :param y: int y coordinate
+    :return: The Second Central difference of a given x and y in matrix matrix
+    """
     x1 = (matrix[x + 1, y] - 2 * matrix[x, y] + matrix[x - 1, y])
     y1 = (matrix[x, y + 1] - 2 * matrix[x, y] + matrix[x, y - 1])
 
@@ -27,6 +56,15 @@ def c_fd2(matrix, x, y):
 
 
 def fd_smooth(input_m2d, gfunc=gfunc, dt=0.1, ld=1):
+    """
+    Applies the Perona-Malik equation solved with finite differences on a 2d matrix.
+
+    :param input_m2d: 2d matrix to apply the Perona-Malik equation on
+    :param gfunc: g function to use in the Perona-Malik equation
+    :param dt: float time step used
+    :param ld: float lambda used
+    :return: a 2d matrix smoothed once with the Perona-Malik equation
+    """
 
     m2d = input_m2d.copy()
     msize = m2d.shape
@@ -51,7 +89,16 @@ def fd_smooth(input_m2d, gfunc=gfunc, dt=0.1, ld=1):
 
 
 def fdsolver(input_m3d, gfunc=gfunc, dt=0.1, ld=0.01, iterations=20):
+    """
+    Smooth a 3d matrix with the Perona-Malik equation with gfunc, dt and ld over iterations number of times.
 
+    :param input_m3d: np.array 3d matrix (image)
+    :param gfunc: g function used
+    :param dt: float time step used
+    :param ld: float lambda used
+    :param iterations: int number of iterations
+    :return: 4d matrix of the 3d image smoothed over iterations number of times.
+    """
     m3d = input_m3d.copy()
 
     m4d = np.zeros(m3d.shape + (iterations,))
@@ -66,6 +113,13 @@ def fdsolver(input_m3d, gfunc=gfunc, dt=0.1, ld=0.01, iterations=20):
     return m4d
 
 def add_noise(real_im, noise=50):
+    """
+    Adds noise to an image. Does not add noise to the border values.
+
+    :param real_im: np.array 3d image
+    :param noise: int how much noise to add
+    :return: np.array 3d noised image
+    """
 
     noisy_im = real_im.copy().astype(int)
     noisy_im[1:-1,1:-1,:] = noisy_im[1:-1,1:-1,:] + np.random.randint(-noise, noise, noisy_im[1:-1,1:-1,:].shape)
@@ -73,6 +127,15 @@ def add_noise(real_im, noise=50):
     return noisy_im
 
 def plot_results(real_im, noisy_im, smoothed_im, added_error):
+    """
+    Creates and saves figures visualizing the smoothing of the data and the best smoothed image.
+
+    :param real_im: np.array 3d image
+    :param noisy_im: np.array 3d noised image
+    :param smoothed_im: np.array 4d smoothed images for every iteration
+    :param added_error: int error added to the noised image
+    :return: Visualizing figures and smoothed images
+    """
     plt.figure(figsize=(10, 10))
     plt.subplot(2, 2, 1)
     plt.imshow(real_im)
@@ -118,6 +181,13 @@ def plot_results(real_im, noisy_im, smoothed_im, added_error):
     plt.savefig(os.path.join('Results', 'fd_solver_graph.png'), format='png')
 
 def p_error(pic1, pic2):
+    """
+    Calculates the rmsd between two images.
+
+    :param pic1: np.array 3d image
+    :param pic2: np.array 3d image
+    :return: rmsd between pic1 and pic2
+    """
     am = pic1 - pic2
     return np.sqrt(np.mean(np.power(am.reshape(-1), 2)))
 

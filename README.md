@@ -30,6 +30,12 @@ solvers (allowing you to chose the best one). Additionally, information
 about the smoothing process is also saved. You are also given the 
 option to change the timesteps (dt), lambda (ld) and g function.
 
+The three solvers consists are:
+1. a finite difference (FD) solver,
+2. a FD written in numpy solver,
+3. and an anisotropic lib solver
+
+
 To optimize for the best dt and ld for your image open the opt.py script.
 
 

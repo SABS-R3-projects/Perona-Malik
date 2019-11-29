@@ -12,6 +12,7 @@ dt = 0.02
 
 
 def spread_one_colour(image, g, dt0, dim, ld=0.01):
+
     image[:, :, dim] = spread_once(image[:, :, dim], dt=dt0, g=g, ld=ld)
     return image[:, :, dim]
 
@@ -65,6 +66,18 @@ def spread_colours(original_image, g=func, dt=dt, ld=0.01):
 
 
 def numpysolver(im, noisy_im, gfunc, dt, ld, iterations, error_added):
+    """
+    Smooth a 3d matrix with the Perona-Malik equation with gfunc, dt and ld over iterations number of times.
+
+    :param im: np.array 3d matrix (image)
+    :param noisy_im: np.array noised 3d matrix (image)
+    :param gfunc: g function used
+    :param dt: float time step used
+    :param ld: float lambda used
+    :param iterations: int number of iterations
+    :param error_added: int error added to the noised image
+    :return:
+    """
     xs = noisy_im.copy().astype(int)
 
     start = xs
