@@ -11,36 +11,37 @@ k = 0.01
 dt = 0.02
 
 
-# Helper function for multiprocessing. Do not call!!
 def spread_one_colour(image, g, dt0, dim, ld=0.01):
+    """
+    Helper function for multiprocessing. Do not call!!
+    Has to be defined at the top of the file for some reason
+    """
     image[:, :, dim] = spread_once(image[:, :, dim], dt=dt0, g=g, ld=ld)
     return image[:, :, dim]
 
 
 # Smooth,positive, non-increasing function g:
 def func(x, k=0.01):
+    """
+    User defined g function.
+    :param x: Function input (float)
+    :param k: User defined parameter. Should be less than one and larger than 0
+    :return: Function output (float)
+    """
     return np.exp(-(x * k) ** 2)
 
 
 # Calculates the divergence at each point of the matrix x
 def divergence(x):
+    """
+    Returns a matrix containing the divergence at each point of the input matrix
+    :param x: Input matrix
+    :return: Divergence matrix
+    """
     grad = np.gradient(x)
     xs = np.gradient(grad[0])[0]
     ys = np.gradient(grad[1])[1]
     return xs + ys
-
-
-# Helper function that normalizes before plotting
-def prepare_to_plot(xs, normalize=True):
-    if normalize:
-        im = xs.copy()
-        for i in range(3):
-            ranged = np.amax(xs[:, :, i]) - np.amin(xs[:, :, i])
-            im[:, :, i] = (xs[:, :, i] - np.amin(xs[:, :, i])) / ranged
-        return im
-    else:
-        return xs / 255.0
-
 
 # Advance the matrix by one timestep (dt)
 def spread_once(xs, g=func, dt=dt, ld=0.01):
