@@ -6,12 +6,22 @@ from scipy import optimize
 import cma
 from skimage.measure import compare_ssim as ssim
 
-k = 0.01
+im = cv2.imread("Apple.jpg")
+im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
+xs = im.copy()
+
+def add_noise(xs):
+    noise = np.random.randint(-50, 50, xs.shape)
+    noisy_image = xs.astype(int) + noise
+    return noisy_image
+
+noisy_image = add_noise(xs)
+start = noisy_image.copy()
+
 
 # Smooth,positive, non-increasing function g:
 def func(x, k=0.01):
     return np.exp(-(x*k)**2)
-
 
 # Calculates the divergence at each point of the matrix x
 def divergence(x):
@@ -20,12 +30,10 @@ def divergence(x):
     ys = np.gradient(grad[1])[1]
     return xs + ys
 
-
 # Helper function that normalizes before plotting and makes everything ints
 def prepare_to_plot(xs):
     ranged = np.amax(xs) - np.amin(xs)
     return ((xs + np.amin(xs)) / ranged * 255).astype(int)
-
 
 # Advance the matrix by one timestep (dt)
 def spread_once(xs, k=0.01, dt=0.02):
@@ -39,37 +47,36 @@ def spread_once(xs, k=0.01, dt=0.02):
     return xs
 
 
-def add_noise():
-    im = cv2.imread("Smily.png")
-    xs = im.copy()
-    noise = np.random.randint(-10, 10, xs.shape)
-    xs = xs + noise
-    return xs
+
 
 def smoothing_function(k=0.01, dt =0.02):
-    xs = add_noise()
-    for i in range(100):
+    for i in range(10):
         print(i)
-        xs[:, :, 0] = spread_once(xs[:, :, 0],k, dt)
-        xs[:, :, 1] = spread_once(xs[:, :, 1],k, dt)
-        xs[:, :, 2] = spread_once(xs[:, :, 2],k, dt)
-    return xs
+        noisy_image[:, :, 0] = spread_once(noisy_image[:, :, 0],k, dt)
+        noisy_image[:, :, 1] = spread_once(noisy_image[:, :, 1],k, dt)
+        noisy_image[:, :, 2] = spread_once(noisy_image[:, :, 2],k, dt)
+    return noisy_image
 
 
 def image_difference(k_array):
-    noisy_image = add_noise()
-    filtered_image = smoothing_function(k_array[0], k_array[1])
+    filtered_image = smoothing_function(k_array[0])
     difference = 1 - ssim(noisy_image, filtered_image, multichannel=True,data_range=filtered_image.max() - filtered_image.min())
     return difference
 
 def scoring_func():
-    x0 = np.array([0.01, 0.01])
-    # A function that implements the CMA-ES algorithm on the noisy dataset to optimize the values of lambda and c
-    #minimization_sol, es = cma.fmin2(image_difference, [0.03, 0.02], 0.5)
-    minimization_sol = optimize.minimize(image_difference, x0, method= "Nelder-Mead")
+    x0 = np.array([0.05])
+    # A function that implements the CMA-ES algorithm on the noisy dataset
+    minimization_sol, es = cma.fmin(image_difference, [0.03], 0.5)
+    #minimization_sol = optimize.minimize(image_difference, x0, method= "Nelder-Mead", options = {'maxiter': 10})
     print(minimization_sol)
 
 
-add_noise()
-smoothing_function()
+smooth_image = smoothing_function()
 scoring_func()
+plt.subplot(1, 3, 1)
+plt.imshow(prepare_to_plot(im))
+plt.subplot(1, 3, 2)
+plt.imshow(prepare_to_plot(start))
+plt.subplot(1, 3, 3)
+plt.imshow(prepare_to_plot(smooth_image))
+plt.show()

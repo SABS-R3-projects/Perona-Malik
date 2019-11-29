@@ -1,6 +1,5 @@
 import numpy as np
 import cv2
-
 import matplotlib.pyplot as plt
 from medpy.filter.smoothing import anisotropic_diffusion
 from skimage.measure import compare_ssim as ssim
@@ -8,7 +7,8 @@ from skimage.measure import compare_ssim as ssim
 
 img = np.random.uniform(size=(32,32))
 im = cv2.imread("Apple.jpg")
-im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
+im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)# Changing the order of the color channel to RGB to get
+                                        #a red apple rather than a blue one
 xs = im.copy()
 
 def prepare_to_plot(xs):
@@ -22,9 +22,10 @@ def prepare_to_plot(xs):
 def add_noise(xs):
     """
     A method used to add noise to an image
+    :param xs: input array of the original image to be added noise to
     :return: An array corresponding to a noisy image
     """
-    noise = np.random.randint(-20, 20, xs.shape)
+    noise = np.random.randint(-30, 30, xs.shape)
     xs = xs + noise
     return prepare_to_plot(xs)
 
@@ -34,8 +35,7 @@ def filter(xs):
     :param xs: an array corresponding to a noisy image
     :return: An array corresponding to a cleaner image
     """
-    img_filtered = anisotropic_diffusion(xs, niter = 20, option=1)
-    #img_filtered = anisotropic_diffusion(xs, niter=5, option=1)
+    img_filtered = anisotropic_diffusion(xs, gamma = 0.1, kappa = 40, niter = 20, option=1)
     return prepare_to_plot(img_filtered)
 
 def plot_images(xs):
@@ -64,6 +64,3 @@ def plot_images(xs):
     plt.show()
 
 plot_images(xs)
-
-
-
