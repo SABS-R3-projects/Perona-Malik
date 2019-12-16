@@ -16,7 +16,6 @@ install:
   - pip install -r requirements.txt
 
 # Run the unit test
-script: echo foo
-#script:
+script:
 #  - coverage run tests.py
- # - test_image.py
+  - test_image.py
