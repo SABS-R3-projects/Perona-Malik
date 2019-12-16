@@ -7,16 +7,16 @@ language: python
 # Set the python version to 3.7.4
 matrix:
   include:
-    - python: 3.7
+    - python: 3.7.4
       dist: xenial
-      sudo: true
+      #sudo: true
 
 # Install the codecov pip dependency
 install:
   - pip install -r requirements.txt
 
 # Run the unit test
-script: echo foo"
+script: echo foo
 #script:
 #  - coverage run tests.py
  # - test_image.py
