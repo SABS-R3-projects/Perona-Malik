@@ -11,6 +11,8 @@ link.
 
     http://people.maths.ox.ac.uk/trefethen/pdectb/perona2.pdf
 
+Although the equation is good at conserving the edges initially, at long time scales it starts to ignore them and begins to behave like the heat equation. This can be seen when opening Results/animated_dog.gif.
+
 
 ### Prerequisites and Installing
 
